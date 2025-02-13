@@ -6,45 +6,38 @@ MARIADB_DATA_DIR := $(DATA_DIR)/mariadb
 
 name = inception
 
-all: create_dirs make_dir_up
+all: up
 
-build: create_dirs make_dir_up_build
+#this will make, start and keep containers running
+up: create_dirs
+	@printf "Starting configuration\n"
+	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) up -d --build
 
 down:
 	@printf "Stopping configuration ${name}...\n"
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) down
 
-re: fclean all
+re: fclean up
 
 clean: down
-	@printf "Cleaning configuration ${name}...\n"
-	@docker system prune -a
-	@sudo rm -rf $(WORDPRESS_DATA_DIR)/*
-	@sudo rm -rf $(MARIADB_DATA_DIR)/*
+	@printf "Cleaning but keeping the data...\n"
+	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) down --remove-orphans
+	@docker system prune -f
 
 fclean: down
 	@printf "Total clean of all configurations docker\n"
-#	@docker stop $$(docker ps -qa)
 	@docker system prune --all --force --volumes
 	@docker network prune --force
 	@docker volume prune --force
-	@sudo rm -rf $(WORDPRESS_DATA_DIR)/*
-	@sudo rm -rf $(MARIADB_DATA_DIR)/*
 
 logs:
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) logs -f
-
-.PHONY: all build down re clean fclean logs create_dirs make_dir_up make_dir_up_build
 
 create_dirs:
 	@printf "Creating data directories...\n"
 	@mkdir -p $(WORDPRESS_DATA_DIR)
 	@mkdir -p $(MARIADB_DATA_DIR)
 
-make_dir_up:
-	@printf "Launching configuration ${name}...\n"
-	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) up -d
+re: fclean up
 
-make_dir_up_build:
-	@printf "Building configuration ${name}...\n"
-	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) up -d --build
+.PHONY: all up down re clean fclean logs create_dirs

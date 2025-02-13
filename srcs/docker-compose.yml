@@ -18,6 +18,7 @@ services:
     networks:
       - docker-network
     image: mariadb:sataskin
+
   nginx:
     container_name: nginx
     init: true
