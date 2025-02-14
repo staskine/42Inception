@@ -18,7 +18,6 @@ services:
     networks:
       - docker-network
     image: mariadb:sataskin
-
   nginx:
     container_name: nginx
     init: true
@@ -35,7 +34,7 @@ services:
     networks:
       - docker-network
     depends_on:
-      - mariadb
+      - wordpress
     image: nginx:sataskin
   wordpress:
     container_name: wordpress
@@ -62,7 +61,6 @@ services:
       - docker-network
     depends_on:
       - mariadb
-      - nginx
     image: wordpress:sataskin
 volumes:
   mariadb:

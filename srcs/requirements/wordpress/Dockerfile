@@ -10,14 +10,16 @@ RUN apk update && apk add --no-cache bash curl mariadb-client php83 php83-fpm \
 
 RUN addgroup -g 82 www-data && adduser -u 82 -G www-data -s /bin/sh -D www-data || true
 
-RUN curl -o /usr/local/bin/wp -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-	chmod +x /usr/local/bin/wp
+#RUN curl -o /usr/local/bin/wp -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+#	chmod +x /usr/local/bin/wp
 
-COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
+COPY www.conf /etc/php83/php-fpm.d/www.conf
 
 COPY tools/wordpress-entrypoint.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
+
+RUN adduser -D -H -s /sbin/nologin -g www-data -G www-data www-data
 
 RUN chown -R 775 /var/www/html
 
