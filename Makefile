@@ -29,6 +29,8 @@ fclean: down
 	@docker system prune --all --force --volumes
 	@docker network prune --force
 	@docker volume prune --force
+	@sudo rm -rf $(WORDPRESS_DATA_DIR) 
+	@sudo rm -rf $(MARIADB_DATA_DIR)
 
 logs:
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file $(ENV_FILE) logs -f

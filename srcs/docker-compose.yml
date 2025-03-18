@@ -18,11 +18,10 @@ services:
     networks:
       - docker-network
     image: mariadb:sataskin
-
   nginx:
     container_name: nginx
     init: true
-    restart: on-failure
+    restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
     env_file:
@@ -35,12 +34,12 @@ services:
     networks:
       - docker-network
     depends_on:
-      - mariadb
+      - wordpress
     image: nginx:sataskin
   wordpress:
     container_name: wordpress
     init: true
-    restart: on-failure
+    restart: always
     expose:
       -  "9000"
     environment:
@@ -62,7 +61,6 @@ services:
       - docker-network
     depends_on:
       - mariadb
-      - nginx
     image: wordpress:sataskin
 volumes:
   mariadb:
